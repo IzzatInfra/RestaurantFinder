@@ -16,4 +16,27 @@
     <string name="confirm_schedule">Confirm Schedule</string>
     <string name="your_schedules">Your Schedules:</string>
     <string name="no_date_selected">No date selected</string>
+    //github
+    <string name="view_on_github">View on GitHub</string>
+    <string name="github_url">https://github.com/IzzatInfra/ElectricityBillEstimator.git</string>
+    <string name="cp_right">© 2025 Group Project ICT 602. All rights reserved.</string>
+    //student 1
+    <string name="name">Name: Nur Izzat Saharudin</string>
+    <string name="sid">Student ID: 2022694896</string>
+    <string name="course">Course: ICT602 - Mobile Technology</string>
+
+    //student 2
+    <string name="name2">Name: Nur Izzat Saharudin</string>
+    <string name="sid2">Student ID: 2022694896</string>
+    <string name="course2">Course: ICT602 - Mobile Technology</string>
+
+    //student 3
+    <string name="name3">Name: Nur Izzat Saharudin</string>
+    <string name="sid3">Student ID: 2022694896</string>
+    <string name="course3">Course: ICT602 - Mobile Technology</string>
+
+    //student 4
+    <string name="name4">Name: Nur Izzat Saharudin</string>
+    <string name="sid4">Student ID: 2022694896</string>
+    <string name="course4">Course: ICT602 - Mobile Technology</string>
 </resources>

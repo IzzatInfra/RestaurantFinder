@@ -108,10 +108,22 @@ class ScheduleActivity : AppCompatActivity() {
 
         scheduleRef.addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
+                val scheduleList = mutableListOf<Triple<String, String, String>>() // date, restaurant, key
+
                 for (child in snapshot.children) {
                     val date = child.child("date").value?.toString() ?: continue
                     val restaurant = child.child("restaurant").value?.toString() ?: "Unknown"
+                    val key = child.key ?: continue
+                    scheduleList.add(Triple(date, restaurant, key))
+                }
 
+                // Sort by date
+                val sdf = java.text.SimpleDateFormat("d/M/yyyy", Locale.getDefault())
+                val sortedList = scheduleList.sortedBy {
+                    try { sdf.parse(it.first) } catch (e: Exception) { Date(Long.MAX_VALUE) }
+                }
+
+                for ((date, restaurant, key) in sortedList) {
                     val item = TextView(this@ScheduleActivity)
                     item.text = "$restaurant on $date"
                     item.textSize = 16f
@@ -120,7 +132,7 @@ class ScheduleActivity : AppCompatActivity() {
                     val deleteBtn = Button(this@ScheduleActivity)
                     deleteBtn.text = "Delete"
                     deleteBtn.setOnClickListener {
-                        snapshot.ref.child(child.key!!).removeValue().addOnSuccessListener {
+                        scheduleRef.child(key).removeValue().addOnSuccessListener {
                             Toast.makeText(applicationContext, "Deleted", Toast.LENGTH_SHORT).show()
                             loadSchedules()
                         }
@@ -140,4 +152,5 @@ class ScheduleActivity : AppCompatActivity() {
             }
         })
     }
+
 }
