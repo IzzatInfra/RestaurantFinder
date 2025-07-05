@@ -90,5 +90,11 @@ class ProfileActivity : AppCompatActivity() {
         btnAbout.setOnClickListener {
             startActivity(Intent(this, AboutActivity::class.java))
         }
+
+        val btnHome: Button = findViewById(R.id.btnHome)
+        btnHome.setOnClickListener {
+            startActivity(Intent(this, MainActivity::class.java))
+            finish()
+        }
     }
 }

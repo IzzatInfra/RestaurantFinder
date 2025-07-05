@@ -11,6 +11,17 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
+        <ImageView
+            android:id="@+id/imageLogo"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:contentDescription="App Logo"
+            android:src="@drawable/logo"
+            android:padding="15dp"
+            android:layout_marginTop="25dp"
+            android:layout_marginBottom="25dp"
+            android:layout_gravity="center_horizontal"/>
+
         <Spinner
             android:id="@+id/spinnerRestaurants"
             android:layout_width="match_parent"
