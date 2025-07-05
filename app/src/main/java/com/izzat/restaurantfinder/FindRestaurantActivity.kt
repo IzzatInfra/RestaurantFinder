@@ -1,4 +1,3 @@
-// FindRestaurantActivity.kt
 package com.izzat.restaurantfinder
 
 import android.Manifest
@@ -18,6 +17,11 @@ import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
+import com.google.android.libraries.places.api.Places
+import com.google.android.libraries.places.api.model.Place
+import com.google.android.libraries.places.api.model.PlaceLikelihood
+import com.google.android.libraries.places.api.net.FindCurrentPlaceRequest
+import com.google.android.libraries.places.api.net.PlacesClient
 
 class FindRestaurantActivity : AppCompatActivity(), OnMapReadyCallback {
 
@@ -25,6 +29,7 @@ class FindRestaurantActivity : AppCompatActivity(), OnMapReadyCallback {
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private lateinit var btnOpenNavigation: Button
     private lateinit var btnSchedule: Button
+    private lateinit var placesClient: PlacesClient
     private var currentLatLng: LatLng? = null
     private val LOCATION_PERMISSION_CODE = 1001
 
@@ -32,12 +37,23 @@ class FindRestaurantActivity : AppCompatActivity(), OnMapReadyCallback {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_find_restaurant)
 
+        // 🔐 Places Initialization
+        if (!Places.isInitialized()) {
+            Places.initialize(applicationContext, getString(R.string.google_maps_key))
+        }
+        placesClient = Places.createClient(this)
+
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
+
         btnOpenNavigation = findViewById(R.id.btnOpenNavigation)
         btnSchedule = findViewById(R.id.btnSchedule)
 
-        val mapFragment =
-            supportFragmentManager.findFragmentById(R.id.mapFragment) as SupportMapFragment
+        val btnSearchNearby = findViewById<Button>(R.id.btnSearchNearby)
+        btnSearchNearby.setOnClickListener {
+            findNearbyRestaurants()
+        }
+
+        val mapFragment = supportFragmentManager.findFragmentById(R.id.mapFragment) as SupportMapFragment
         mapFragment.getMapAsync(this)
 
         btnOpenNavigation.setOnClickListener {
@@ -92,22 +108,41 @@ class FindRestaurantActivity : AppCompatActivity(), OnMapReadyCallback {
                 currentLatLng?.let {
                     mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(it, 15f))
                     mMap.addMarker(MarkerOptions().position(it).title("You are here"))
+                    findNearbyRestaurants()
                 }
             } else {
                 Toast.makeText(this, "Unable to fetch location", Toast.LENGTH_SHORT).show()
             }
         }
+    }
 
-        fun onRequestPermissionsResult(
-            requestCode: Int,
-            permissions: Array<out String>,
-            grantResults: IntArray
-        ) {
-            if (requestCode == LOCATION_PERMISSION_CODE && grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                getLastLocation()
-            } else {
-                Toast.makeText(this, "Permission denied", Toast.LENGTH_SHORT).show()
+    private fun findNearbyRestaurants() {
+        val placeFields = listOf(Place.Field.NAME, Place.Field.LAT_LNG)
+        val request = FindCurrentPlaceRequest.newInstance(placeFields)
+
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+            != PackageManager.PERMISSION_GRANTED) return
+
+        placesClient.findCurrentPlace(request).addOnSuccessListener { response ->
+            for (placeLikelihood: PlaceLikelihood in response.placeLikelihoods) {
+                val place = placeLikelihood.place
+                val name = place.name ?: continue
+                val location = place.latLng ?: continue
+
+                if (name.contains("restaurant", true) || name.contains("cafe", true)) {
+                    mMap.addMarker(MarkerOptions().position(location).title(name))
+                }
             }
+        }.addOnFailureListener {
+            Toast.makeText(this, "Failed to fetch nearby restaurants", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        if (requestCode == LOCATION_PERMISSION_CODE && grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            getLastLocation()
+        } else {
+            Toast.makeText(this, "Permission denied", Toast.LENGTH_SHORT).show()
         }
     }
 }

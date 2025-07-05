@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">RestaurantFinder</string>
+    <string name="google_maps_key">AIzaSyA_O7G154be_cAdKrgFR4P00qXIVHP3xok</string>
+
 </resources>

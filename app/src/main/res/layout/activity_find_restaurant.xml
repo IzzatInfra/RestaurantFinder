@@ -1,9 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/layoutFindRestaurant"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp"
+    tools:context=".FindRestaurantActivity">
 
+    <!-- Google Map Fragment -->
     <fragment
         android:id="@+id/mapFragment"
         android:name="com.google.android.gms.maps.SupportMapFragment"
@@ -11,15 +16,27 @@
         android:layout_height="0dp"
         android:layout_weight="1" />
 
+    <!-- Buttons under the map -->
+    <Button
+        android:id="@+id/btnSearchNearby"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Search Nearby Restaurants"
+        android:layout_marginTop="8dp" />
+
     <Button
         android:id="@+id/btnOpenNavigation"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Open Navigation (Google Maps)" />
+        android:text="Open Navigation (Google Maps)"
+        android:layout_marginTop="8dp" />
 
     <Button
         android:id="@+id/btnSchedule"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Schedule Visit" />
+        android:text="Schedule Visit"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp" />
+
 </LinearLayout>

@@ -5,34 +5,46 @@
     android:fillViewport="true">
 
     <LinearLayout
+        android:orientation="vertical"
+        android:padding="24dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="24dp">
+        android:gravity="center_horizontal">
 
         <TextView
             android:id="@+id/textUserEmail"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Welcome,"
-            android:textSize="20sp"
-            android:textStyle="bold"
-            android:layout_gravity="center"
-            android:padding="12dp" />
+            android:text="Welcome!"
+            android:textSize="18sp"
+            android:gravity="center"
+            android:layout_marginBottom="24dp" />
 
         <Button
             android:id="@+id/btnFindRestaurant"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Find Restaurant"
-            android:layout_marginTop="24dp" />
+            android:text="Find Restaurant" />
 
         <Button
             android:id="@+id/btnSchedule"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Schedule Visit"
+            android:text="View Schedule"
             android:layout_marginTop="16dp" />
 
+        <Button
+            android:id="@+id/btnProfile"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Profile"
+            android:layout_marginTop="16dp" />
+
+        <Button
+            android:id="@+id/btnLogout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Logout"
+            android:layout_marginTop="16dp" />
     </LinearLayout>
 </ScrollView>
