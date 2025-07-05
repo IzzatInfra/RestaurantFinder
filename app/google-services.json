@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "920651867063",
+    "project_id": "restaurantfinder-69fbf",
+    "storage_bucket": "restaurantfinder-69fbf.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:920651867063:android:93328edc71fdb840a4fe32",
+        "android_client_info": {
+          "package_name": "com.izzat.restaurantfinder"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBgZXHeUSgRNk89oOzl0ErJKLbVoK9YYyk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
