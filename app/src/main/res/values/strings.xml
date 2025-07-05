@@ -1,5 +1,19 @@
 <resources>
     <string name="app_name">RestaurantFinder</string>
     <string name="google_maps_key">AIzaSyA_O7G154be_cAdKrgFR4P00qXIVHP3xok</string>
-
+    <string name="last_name">Last Name</string>
+    <string name="first_name">First Name</string>
+    <string name="address">Address</string>
+    <string name="mobile_no">Mobile No</string>
+    <string name="enable_fingerprint_authentication">Enable Fingerprint Authentication</string>
+    <string name="save">Save</string>
+    <string name="logout">Logout</string>
+    <string name="email">Email</string>
+    <string name="password">Password</string>
+    <string name="register">Register</string>
+    <string name="already_have_an_account_login">Already have an account? Login</string>
+    <string name="pick_date">Pick Date</string>
+    <string name="confirm_schedule">Confirm Schedule</string>
+    <string name="your_schedules">Your Schedules:</string>
+    <string name="no_date_selected">No date selected</string>
 </resources>

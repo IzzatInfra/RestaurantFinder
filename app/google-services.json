@@ -1,6 +1,7 @@
 {
   "project_info": {
     "project_number": "920651867063",
+    "firebase_url": "https://restaurantfinder-69fbf-default-rtdb.asia-southeast1.firebasedatabase.app",
     "project_id": "restaurantfinder-69fbf",
     "storage_bucket": "restaurantfinder-69fbf.firebasestorage.app"
   },
@@ -12,7 +13,12 @@
           "package_name": "com.izzat.restaurantfinder"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "920651867063-30invunj037i5b208idf5evr14ndhvku.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyBgZXHeUSgRNk89oOzl0ErJKLbVoK9YYyk"
@@ -20,7 +26,12 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "920651867063-30invunj037i5b208idf5evr14ndhvku.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     }

@@ -1,89 +1,143 @@
 package com.izzat.restaurantfinder
 
-import android.app.AlarmManager
-import android.app.PendingIntent
-import android.content.Context
-import android.content.Intent
+import android.app.DatePickerDialog
 import android.os.Bundle
-import android.widget.Button
-import android.widget.TextView
-import android.widget.Toast
+import android.view.View
+import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
-import com.google.android.material.datepicker.MaterialDatePicker
-import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.*
 import java.util.*
 
 class ScheduleActivity : AppCompatActivity() {
 
+    private lateinit var textSelectedDate: TextView
     private lateinit var btnPickDate: Button
     private lateinit var btnConfirmSchedule: Button
-    private lateinit var textSelectedDate: TextView
+    private lateinit var spinnerRestaurants: Spinner
+    private lateinit var layoutScheduleList: LinearLayout
 
-    private var selectedDateInMillis: Long = 0L
-    private var latitude = 0.0
-    private var longitude = 0.0
+    private lateinit var auth: FirebaseAuth
+    private lateinit var database: DatabaseReference
+
+    private var selectedDate: String = ""
+    private var selectedRestaurant: String = ""
+    private val MAX_SCHEDULE = 20
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_schedule)
 
+        textSelectedDate = findViewById(R.id.textSelectedDate)
         btnPickDate = findViewById(R.id.btnPickDate)
         btnConfirmSchedule = findViewById(R.id.btnConfirmSchedule)
-        textSelectedDate = findViewById(R.id.textSelectedDate)
+        spinnerRestaurants = findViewById(R.id.spinnerRestaurants)
+        layoutScheduleList = findViewById(R.id.layoutScheduleList)
 
-        latitude = intent.getDoubleExtra("lat", 0.0)
-        longitude = intent.getDoubleExtra("lng", 0.0)
+        auth = FirebaseAuth.getInstance()
+        database = FirebaseDatabase.getInstance().reference
+        val uid = auth.currentUser?.uid ?: return
+
+        // Extract restaurant data from intent
+        val restaurantList = intent.getStringArrayListExtra("restaurantList") ?: arrayListOf()
+
+
+        val adapter = ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, restaurantList)
+        spinnerRestaurants.adapter = adapter
+
+        spinnerRestaurants.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(parent: AdapterView<*>, view: View?, position: Int, id: Long) {
+                selectedRestaurant = parent.getItemAtPosition(position).toString()
+            }
+
+            override fun onNothingSelected(parent: AdapterView<*>) {}
+        }
 
         btnPickDate.setOnClickListener {
-            val picker = MaterialDatePicker.Builder.datePicker()
-                .setTitleText("Select date")
-                .build()
+            val calendar = Calendar.getInstance()
+            val year = calendar.get(Calendar.YEAR)
+            val month = calendar.get(Calendar.MONTH)
+            val day = calendar.get(Calendar.DAY_OF_MONTH)
 
-            picker.show(supportFragmentManager, picker.toString())
-            picker.addOnPositiveButtonClickListener { selection ->
-                selectedDateInMillis = selection
-                textSelectedDate.text = "Scheduled for: ${Date(selection)}"
-            }
+            val datePickerDialog = DatePickerDialog(this, { _, y, m, d ->
+                selectedDate = "${d}/${m + 1}/${y}"
+                textSelectedDate.text = selectedDate
+            }, year, month, day)
+
+            datePickerDialog.show()
         }
 
         btnConfirmSchedule.setOnClickListener {
-            if (selectedDateInMillis != 0L) {
-                saveScheduleToFirebase()
-                setReminderNotification()
-            } else {
+            if (selectedDate.isBlank()) {
                 Toast.makeText(this, "Please select a date", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
+            if (selectedRestaurant.isBlank()) {
+                Toast.makeText(this, "Please select a restaurant", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
+            val scheduleRef = database.child("schedules").child(uid)
+
+            scheduleRef.get().addOnSuccessListener { snapshot ->
+                if (snapshot.childrenCount >= MAX_SCHEDULE) {
+                    Toast.makeText(this, "Limit reached (Max $MAX_SCHEDULE)", Toast.LENGTH_SHORT).show()
+                } else {
+                    val newSchedule = mapOf(
+                        "date" to selectedDate,
+                        "restaurant" to selectedRestaurant
+                    )
+                    scheduleRef.push().setValue(newSchedule).addOnSuccessListener {
+                        Toast.makeText(this, "Scheduled", Toast.LENGTH_SHORT).show()
+                        selectedDate = ""
+                        textSelectedDate.text = "No date selected"
+                        loadSchedules()
+                    }
+                }
             }
         }
+
+        loadSchedules()
     }
 
-    private fun saveScheduleToFirebase() {
-        val dbRef = FirebaseDatabase.getInstance().getReference("schedules")
-        val id = dbRef.push().key ?: return
-        val schedule = mapOf(
-            "id" to id,
-            "timestamp" to selectedDateInMillis,
-            "lat" to latitude,
-            "lng" to longitude
-        )
-        dbRef.child(id).setValue(schedule)
-        Toast.makeText(this, "Schedule saved", Toast.LENGTH_SHORT).show()
-    }
+    private fun loadSchedules() {
+        layoutScheduleList.removeAllViews()
+        val uid = auth.currentUser?.uid ?: return
+        val scheduleRef = database.child("schedules").child(uid)
 
-    private fun setReminderNotification() {
-        val intent = Intent(this, ScheduleNotificationReceiver::class.java).apply {
-            putExtra("message", "Time to visit your scheduled restaurant!")
-        }
-        val pendingIntent = PendingIntent.getBroadcast(
-            this, 0, intent,
-            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
-        )
+        scheduleRef.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                for (child in snapshot.children) {
+                    val date = child.child("date").value?.toString() ?: continue
+                    val restaurant = child.child("restaurant").value?.toString() ?: "Unknown"
 
-        val alarmManager = getSystemService(Context.ALARM_SERVICE) as AlarmManager
-        alarmManager.setExact(
-            AlarmManager.RTC_WAKEUP,
-            selectedDateInMillis,
-            pendingIntent
-        )
-        Toast.makeText(this, "Notification scheduled", Toast.LENGTH_SHORT).show()
+                    val item = TextView(this@ScheduleActivity)
+                    item.text = "$restaurant on $date"
+                    item.textSize = 16f
+                    item.setPadding(16, 16, 16, 16)
+
+                    val deleteBtn = Button(this@ScheduleActivity)
+                    deleteBtn.text = "Delete"
+                    deleteBtn.setOnClickListener {
+                        snapshot.ref.child(child.key!!).removeValue().addOnSuccessListener {
+                            Toast.makeText(applicationContext, "Deleted", Toast.LENGTH_SHORT).show()
+                            loadSchedules()
+                        }
+                    }
+
+                    val container = LinearLayout(this@ScheduleActivity)
+                    container.orientation = LinearLayout.HORIZONTAL
+                    container.addView(item, LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f))
+                    container.addView(deleteBtn)
+
+                    layoutScheduleList.addView(container)
+                }
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                Toast.makeText(applicationContext, "Failed to load schedule", Toast.LENGTH_SHORT).show()
+            }
+        })
     }
 }
