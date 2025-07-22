@@ -36,6 +36,7 @@ import com.izzat.restaurantfinder.model.WeatherResponse
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import android.widget.TextView
 
 class FindRestaurantActivity : AppCompatActivity(), OnMapReadyCallback {
 
