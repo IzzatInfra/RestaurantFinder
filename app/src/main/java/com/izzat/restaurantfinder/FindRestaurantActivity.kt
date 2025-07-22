@@ -31,6 +31,12 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import kotlin.math.*
 
+import com.izzat.restaurantfinder.api.WeatherApiService
+import com.izzat.restaurantfinder.model.WeatherResponse
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
+
 class FindRestaurantActivity : AppCompatActivity(), OnMapReadyCallback {
 
     private lateinit var mMap: GoogleMap
@@ -43,6 +49,9 @@ class FindRestaurantActivity : AppCompatActivity(), OnMapReadyCallback {
     private lateinit var placesClient: PlacesClient
     private lateinit var retrofit: Retrofit
     private lateinit var placesApi: PlacesApiService
+    private lateinit var btnOpenInGoogle: Button
+    private lateinit var btnOpenInWaze: Button
+    private lateinit var weatherApi: WeatherApiService
 
     private var currentLatLng: LatLng? = null
     private val LOCATION_PERMISSION_CODE = 1001
@@ -72,6 +81,8 @@ class FindRestaurantActivity : AppCompatActivity(), OnMapReadyCallback {
         btnSchedule = findViewById(R.id.btnSchedule)
         btnSearchNearby = findViewById(R.id.btnSearchNearby)
         recyclerNearby = findViewById(R.id.recyclerNearbyRestaurants)
+        btnOpenInGoogle = findViewById(R.id.btnOpenInGoogle)
+        btnOpenInWaze = findViewById(R.id.btnOpenInWaze)
 
         // Recycler Setup
         restaurantAdapter = RestaurantAdapter { selectedRestaurant ->
@@ -86,6 +97,52 @@ class FindRestaurantActivity : AppCompatActivity(), OnMapReadyCallback {
             layoutManager = LinearLayoutManager(this@FindRestaurantActivity)
             adapter = restaurantAdapter
         }
+
+        btnOpenInGoogle.setOnClickListener {
+            if (restaurantResults.isNotEmpty()) {
+                val query = restaurantResults[0].name
+                val url = "https://www.google.com/search?q=" + Uri.encode(query)
+                val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
+                startActivity(intent)
+            } else {
+                Toast.makeText(this, "No restaurant selected", Toast.LENGTH_SHORT).show()
+            }
+        }
+
+        btnOpenInWaze.setOnClickListener {
+            currentLatLng?.let {
+                val lat = it.latitude
+                val lng = it.longitude
+                val wazeUri = "https://waze.com/ul?ll=$lat,$lng&navigate=yes"
+                val intent = Intent(Intent.ACTION_VIEW, Uri.parse(wazeUri))
+                intent.setPackage("com.waze")
+
+                // Check if Waze is installed
+                if (intent.resolveActivity(packageManager) != null) {
+                    startActivity(intent)
+                } else {
+                    // If not installed, open Play Store or browser
+                    val playStoreIntent = Intent(
+                        Intent.ACTION_VIEW,
+                        Uri.parse("https://play.google.com/store/apps/details?id=com.waze")
+                    )
+                    startActivity(playStoreIntent)
+                }
+            } ?: Toast.makeText(this, "Location not ready yet", Toast.LENGTH_SHORT).show()
+        }
+
+//        val weatherRetrofit = Retrofit.Builder()
+//            .baseUrl("https://api.openweathermap.org/")
+//            .addConverterFactory(GsonConverterFactory.create())
+//            .build()
+//
+//        weatherApi = weatherRetrofit.create(WeatherApiService::class.java)
+
+        weatherApi = Retrofit.Builder()
+            .baseUrl("https://api.openweathermap.org/")
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+            .create(WeatherApiService::class.java)
 
         // Map
         val mapFragment = supportFragmentManager.findFragmentById(R.id.mapFragment) as SupportMapFragment
@@ -146,6 +203,9 @@ class FindRestaurantActivity : AppCompatActivity(), OnMapReadyCallback {
                 currentLatLng = LatLng(location.latitude, location.longitude)
                 mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng!!, 15f))
                 mMap.addMarker(MarkerOptions().position(currentLatLng!!).title("You are here"))
+
+                // Fetch weather here
+                getWeather(location.latitude, location.longitude)
             } else {
                 Toast.makeText(this, "Unable to fetch location", Toast.LENGTH_SHORT).show()
             }
@@ -218,4 +278,25 @@ class FindRestaurantActivity : AppCompatActivity(), OnMapReadyCallback {
             Toast.makeText(this, "Permission denied", Toast.LENGTH_SHORT).show()
         }
     }
+
+    private fun getWeather(lat: Double, lon: Double) {
+        val call = weatherApi.getWeatherByCoords(lat, lon, getString(R.string.openweather_api_key))
+
+        call.enqueue(object : Callback<WeatherResponse> {
+            override fun onResponse(call: Call<WeatherResponse>, response: Response<WeatherResponse>) {
+                if (response.isSuccessful) {
+                    val weather = response.body()
+                    val info = "${weather?.name}: ${weather?.main?.temp}°C, ${weather?.weather?.get(0)?.description}"
+                    Toast.makeText(this@FindRestaurantActivity, info, Toast.LENGTH_LONG).show()
+                } else {
+                    Toast.makeText(this@FindRestaurantActivity, "Failed to get weather", Toast.LENGTH_SHORT).show()
+                }
+            }
+
+            override fun onFailure(call: Call<WeatherResponse>, t: Throwable) {
+                Toast.makeText(this@FindRestaurantActivity, "Error: ${t.message}", Toast.LENGTH_SHORT).show()
+            }
+        })
+    }
+
 }

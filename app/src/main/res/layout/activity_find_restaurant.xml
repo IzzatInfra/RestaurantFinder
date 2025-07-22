@@ -15,8 +15,9 @@
     <Button
         android:id="@+id/btnSearchNearby"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Search Nearby Restaurants" />
+        android:layout_height="35dp"
+        android:text="Search Nearby Restaurants"
+        android:textSize="12sp" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerNearbyRestaurants"
@@ -24,15 +25,43 @@
         android:layout_height="200dp"
         android:layout_margin="8dp" />
 
+    <TextView
+        android:id="@+id/tvWeatherInfo"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Weather loading..."
+        android:padding="8dp"
+        android:textSize="10sp"
+        android:textStyle="bold" />
+
     <Button
         android:id="@+id/btnOpenNavigation"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Open Navigation" />
+        android:layout_height="32dp"
+        android:backgroundTint="@android:color/holo_green_dark"
+        android:text="Open Navigation"
+        android:textSize="10sp" />
+
+    <Button
+        android:id="@+id/btnOpenInWaze"
+        android:layout_width="match_parent"
+        android:layout_height="32dp"
+        android:backgroundTint="@android:color/holo_blue_dark"
+        android:text="Open in Waze"
+        android:textSize="10sp" />
+
+    <Button
+        android:id="@+id/btnOpenInGoogle"
+        android:layout_width="match_parent"
+        android:layout_height="31dp"
+        android:backgroundTint="@android:color/holo_red_dark"
+        android:text="Open in Google"
+        android:textSize="10sp" />
 
     <Button
         android:id="@+id/btnSchedule"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Schedule Visit" />
+        android:layout_height="33dp"
+        android:text="Schedule Visit"
+        android:textSize="10sp" />
 </LinearLayout>
