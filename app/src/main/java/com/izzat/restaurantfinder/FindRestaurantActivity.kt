@@ -52,6 +52,7 @@ class FindRestaurantActivity : AppCompatActivity(), OnMapReadyCallback {
     private lateinit var btnOpenInGoogle: Button
     private lateinit var btnOpenInWaze: Button
     private lateinit var weatherApi: WeatherApiService
+    private lateinit var tvWeatherInfo: TextView
 
     private var currentLatLng: LatLng? = null
     private val LOCATION_PERMISSION_CODE = 1001
@@ -83,6 +84,7 @@ class FindRestaurantActivity : AppCompatActivity(), OnMapReadyCallback {
         recyclerNearby = findViewById(R.id.recyclerNearbyRestaurants)
         btnOpenInGoogle = findViewById(R.id.btnOpenInGoogle)
         btnOpenInWaze = findViewById(R.id.btnOpenInWaze)
+        tvWeatherInfo = findViewById(R.id.tvWeatherInfo)
 
         // Recycler Setup
         restaurantAdapter = RestaurantAdapter { selectedRestaurant ->
@@ -287,14 +289,17 @@ class FindRestaurantActivity : AppCompatActivity(), OnMapReadyCallback {
                 if (response.isSuccessful) {
                     val weather = response.body()
                     val info = "${weather?.name}: ${weather?.main?.temp}°C, ${weather?.weather?.get(0)?.description}"
-                    Toast.makeText(this@FindRestaurantActivity, info, Toast.LENGTH_LONG).show()
+//                    Toast.makeText(this@FindRestaurantActivity, info, Toast.LENGTH_LONG).show()
+                    tvWeatherInfo.text = info
                 } else {
-                    Toast.makeText(this@FindRestaurantActivity, "Failed to get weather", Toast.LENGTH_SHORT).show()
+//                    Toast.makeText(this@FindRestaurantActivity, "Failed to get weather", Toast.LENGTH_SHORT).show()
+                    tvWeatherInfo.text = "Failed to get weather"
                 }
             }
 
             override fun onFailure(call: Call<WeatherResponse>, t: Throwable) {
-                Toast.makeText(this@FindRestaurantActivity, "Error: ${t.message}", Toast.LENGTH_SHORT).show()
+//                Toast.makeText(this@FindRestaurantActivity, "Error: ${t.message}", Toast.LENGTH_SHORT).show()
+                tvWeatherInfo.text = "Error: ${t.message}"
             }
         })
     }
