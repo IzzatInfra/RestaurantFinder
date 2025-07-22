@@ -83,8 +83,8 @@ class FindRestaurantActivity : AppCompatActivity(), OnMapReadyCallback {
         btnSchedule = findViewById(R.id.btnSchedule)
         btnSearchNearby = findViewById(R.id.btnSearchNearby)
         recyclerNearby = findViewById(R.id.recyclerNearbyRestaurants)
-        btnOpenInGoogle = findViewById(R.id.btnOpenInGoogle)
-        btnOpenInWaze = findViewById(R.id.btnOpenInWaze)
+//        btnOpenInGoogle = findViewById(R.id.btnOpenInGoogle)
+//        btnOpenInWaze = findViewById(R.id.btnOpenInWaze)
         tvWeatherInfo = findViewById(R.id.tvWeatherInfo)
 
         // Recycler Setup
@@ -101,38 +101,38 @@ class FindRestaurantActivity : AppCompatActivity(), OnMapReadyCallback {
             adapter = restaurantAdapter
         }
 
-        btnOpenInGoogle.setOnClickListener {
-            if (restaurantResults.isNotEmpty()) {
-                val query = restaurantResults[0].name
-                val url = "https://www.google.com/search?q=" + Uri.encode(query)
-                val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
-                startActivity(intent)
-            } else {
-                Toast.makeText(this, "No restaurant selected", Toast.LENGTH_SHORT).show()
-            }
-        }
+//        btnOpenInGoogle.setOnClickListener {
+//            if (restaurantResults.isNotEmpty()) {
+//                val query = restaurantResults[0].name
+//                val url = "https://www.google.com/search?q=" + Uri.encode(query)
+//                val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
+//                startActivity(intent)
+//            } else {
+//                Toast.makeText(this, "No restaurant selected", Toast.LENGTH_SHORT).show()
+//            }
+//        }
 
-        btnOpenInWaze.setOnClickListener {
-            currentLatLng?.let {
-                val lat = it.latitude
-                val lng = it.longitude
-                val wazeUri = "https://waze.com/ul?ll=$lat,$lng&navigate=yes"
-                val intent = Intent(Intent.ACTION_VIEW, Uri.parse(wazeUri))
-                intent.setPackage("com.waze")
-
-                // Check if Waze is installed
-                if (intent.resolveActivity(packageManager) != null) {
-                    startActivity(intent)
-                } else {
-                    // If not installed, open Play Store or browser
-                    val playStoreIntent = Intent(
-                        Intent.ACTION_VIEW,
-                        Uri.parse("https://play.google.com/store/apps/details?id=com.waze")
-                    )
-                    startActivity(playStoreIntent)
-                }
-            } ?: Toast.makeText(this, "Location not ready yet", Toast.LENGTH_SHORT).show()
-        }
+//        btnOpenInWaze.setOnClickListener {
+//            currentLatLng?.let {
+//                val lat = it.latitude
+//                val lng = it.longitude
+//                val wazeUri = "https://waze.com/ul?ll=$lat,$lng&navigate=yes"
+//                val intent = Intent(Intent.ACTION_VIEW, Uri.parse(wazeUri))
+//                intent.setPackage("com.waze")
+//
+//                // Check if Waze is installed
+//                if (intent.resolveActivity(packageManager) != null) {
+//                    startActivity(intent)
+//                } else {
+//                    // If not installed, open Play Store or browser
+//                    val playStoreIntent = Intent(
+//                        Intent.ACTION_VIEW,
+//                        Uri.parse("https://play.google.com/store/apps/details?id=com.waze")
+//                    )
+//                    startActivity(playStoreIntent)
+//                }
+//            } ?: Toast.makeText(this, "Location not ready yet", Toast.LENGTH_SHORT).show()
+//        }
 
 //        val weatherRetrofit = Retrofit.Builder()
 //            .baseUrl("https://api.openweathermap.org/")
