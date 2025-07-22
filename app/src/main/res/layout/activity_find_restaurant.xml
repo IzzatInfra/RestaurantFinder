@@ -15,9 +15,8 @@
     <Button
         android:id="@+id/btnSearchNearby"
         android:layout_width="match_parent"
-        android:layout_height="35dp"
-        android:text="Search Nearby Restaurants"
-        android:textSize="12sp" />
+        android:layout_height="wrap_content"
+        android:text="Search Nearby Restaurants" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerNearbyRestaurants"
