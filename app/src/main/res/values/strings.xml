@@ -1,6 +1,6 @@
 <resources>
     <string name="app_name">RestaurantFinder</string>
-    <string name="google_maps_key">AIzaSyA_O7G154be_cAdKrgFR4P00qXIVHP3xok</string>
+    <string name="google_maps_key">YOUR_API_KEY_HERE</string>
     <string name="openweather_api_key">YOUR_API_KEY_HERE</string>
     <string name="last_name">Last Name</string>
     <string name="first_name">First Name</string>
